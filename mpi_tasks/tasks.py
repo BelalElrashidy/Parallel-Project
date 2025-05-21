@@ -3,9 +3,11 @@ from mpi4py import MPI
 import numpy as np
 from PIL import Image
 import pandas as pd
+import time
 
 # --- File Processing Task ---
 def file_process_task(file):
+    starttime = time.time()
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     # Your full code from file-process.py goes here
@@ -81,9 +83,15 @@ def file_process_task(file):
         print("File processing task running")
     file_process(file)
     # ... rest of the code ...
+    end_time = time.time()
+
+    elapsed = end_time - starttime
+    print(f"Elapsed time: {elapsed:.4f} seconds")
 
 # --- Image Processing Task ---
 def image_process_task(file):
+    starttime = time.time()
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     
@@ -177,9 +185,15 @@ def image_process_task(file):
         print("Image processing task running")
     master_process(file)
     # ... rest of the code ...
+    end_time = time.time()
+
+    elapsed = end_time - starttime
+    print(f"Elapsed time: {elapsed:.4f} seconds")
 
 # --- Large Text Search Task ---
 def large_text_task(file,keyword):
+    starttime = time.time()
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -220,9 +234,15 @@ def large_text_task(file,keyword):
         print(f"Total occurrences of '{keyword}': {total_count}")
 
     # ... rest of the code ...
+    end_time = time.time()
+
+    elapsed = end_time - starttime
+    print(f"Elapsed time: {elapsed:.4f} seconds")
 
 # --- MPI Machine Learning Task ---
 def mpi_ml_task(filename, target_col):
+    starttime = time.time()
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
         
@@ -321,9 +341,15 @@ def mpi_ml_task(filename, target_col):
         preds = predict(X_test_raw, intercept, coeffs)
         print(f"Predictions: {preds}")
     # ... rest of the code ...
+    end_time = time.time()
+
+    elapsed = end_time - starttime
+    print(f"Elapsed time: {elapsed:.4f} seconds")
 
 # --- Odd-Even Sort Task ---
 def odd_even_sort_task(data):
+    starttime = time.time()
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
         
@@ -436,9 +462,15 @@ def odd_even_sort_task(data):
     else:
         worker_process(comm, counts, displs, n)
     # ... rest of the code ...
+    end_time = time.time()
+
+    elapsed = end_time - starttime
+    print(f"Elapsed time: {elapsed:.4f} seconds")
 
 # --- Statistics Analyzer Task ---
 def statics_ana_task(filename,target_col):
+    starttime = time.time()
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -493,9 +525,15 @@ def statics_ana_task(filename,target_col):
         print(f"Min: {min_global}")
         print(f"Max: {max_global}")
     # ... rest of the code ...
+    end_time = time.time()
+
+    elapsed = end_time - starttime
+    print(f"Elapsed time: {elapsed:.4f} seconds")
 
 # --- Distributed Matrix Multiplication Task ---
 def dist_mat_mult_task(MatA,MatB):
+    starttime = time.time()
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -589,6 +627,9 @@ def dist_mat_mult_task(MatA,MatB):
         n = comm.bcast(None, root=0)
         p = comm.bcast(None, root=0)
         worker(comm, counts, displs, n, p)
+    end_time = time.time()
+    elapsed = end_time - starttime
+    print(f"Elapsed time: {elapsed:.4f} seconds")
 # --- Dispatcher ---
 def main():
     if len(sys.argv) < 2:
@@ -649,13 +690,26 @@ def main():
             mpi_ml_task('mpi_tasks/data.csv','Price')
 
     elif task == "sort":
-        
-
-        if len(sys.argv)<=2:
-            odd_even_sort_task(np.random.randint(1, 1000, size=40).astype('i'))
-        else:
+        print(task)
+        print(len(sys.argv))
+        if len(sys.argv)>2:
+            print("I am here")
             file1 = sys.argv[2]
-            odd_even_sort_task(file1)
+            if file1 == None:
+                odd_even_sort_task(np.random.randint(1, 1000, size=40).astype('i'))
+            else:
+                print(file1)
+                data = str(file1).split(',')
+                Data = np.array([float(s) for s in data])
+                print(Data)
+                # df = pd.read_csv(file1)
+                # Data = df.to_numpy(dtype=float)
+                # odd_even_sort_task(Data)
+        else:
+            
+            odd_even_sort_task(np.random.randint(1, 1000, size=40).astype('i'))
+       
+            
         
 
     elif task == "statics-ana":
