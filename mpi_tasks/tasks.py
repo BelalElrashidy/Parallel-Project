@@ -163,8 +163,8 @@ def image_process_task(file):
             gray_img = recv_gray.reshape((height, width, channels))
             blur_img = recv_blur.reshape((height, width, channels))
 
-            Image.fromarray(gray_img).save('processed_grayscale.png')
-            Image.fromarray(blur_img).save('processed_blur.png')
+            Image.fromarray(gray_img).save(f"images/processed_grayscale_{str(file).split('/')[1].split('.')[0]}.png")
+            Image.fromarray(blur_img).save(f"images/processed_blur_{str(file).split('/')[1].split('.')[0]}.png")
 
             print("Saved processed_grayscale.png and processed_blur.png")
 
@@ -604,33 +604,49 @@ def main():
     # print(files)
     
     if task == "file_process":
-        file1 = sys.argv[2]
+        if len(sys.argv)>2:
+            
+            file1 = sys.argv[2]
 
-        if file1 == None:
+            if file1 == None:
+                file_process_task('mpi_tasks/sample.txt')
+            else:
+                file_process_task(file1)
+        else:
             file_process_task('mpi_tasks/sample.txt')
-        else:
-            file_process_task(file1)
     elif task == "image_process":
-        file1 = sys.argv[2]
+        if len(sys.argv)>2:
+            
+            file1 = sys.argv[2]
 
-        if file1 == None:
+            if file1 == None:
+                image_process_task('mpi_tasks/N.jpeg')
+            else:
+                image_process_task(file1)
+        else:
             image_process_task('mpi_tasks/N.jpeg')
-        else:
-            image_process_task(file1)
     elif task == "parallel_search":
-        file1 = sys.argv[2]
-        file2 = sys.argv[3]
-        if file1 == None or file2 == None:
+        if len(sys.argv)>2:
+            
+            file1 = sys.argv[2]
+            file2 = sys.argv[3]
+            if file1 == None or file2 == None:
+                large_text_task('mpi_tasks/large-text.txt','God')
+            else:
+                large_text_task(file1,file2)
+        else:
             large_text_task('mpi_tasks/large-text.txt','God')
-        else:
-            large_text_task(file1,file2)
     elif task == "linear_regression":
-        file1 = sys.argv[2]
-        file2 = sys.argv[3]
-        if file1 == None or file2 == None:
-            mpi_ml_task('mpi_tasks/data.csv','Price')
+        if len(sys.argv)>2:
+                
+            file1 = sys.argv[2]
+            file2 = sys.argv[3]
+            if file1 == None or file2 == None:
+                mpi_ml_task('mpi_tasks/data.csv','Price')
+            else:
+                mpi_ml_task(file1,file2)
         else:
-            mpi_ml_task(file1,file2)
+            mpi_ml_task('mpi_tasks/data.csv','Price')
 
     elif task == "sort":
         
@@ -639,20 +655,20 @@ def main():
             odd_even_sort_task(np.random.randint(1, 1000, size=40).astype('i'))
         else:
             file1 = sys.argv[2]
-            print(file1)
-            data = str(file1).split(' ')
-            Data = [float(s) for s in data]
-            Data = np.array(Data)
-            print(file1)
-            odd_even_sort_task(Data)
+            odd_even_sort_task(file1)
+        
 
     elif task == "statics-ana":
-        file1 = sys.argv[2]
-        file2 = sys.argv[3]
-        if file1 == None or file2 == None:
-            statics_ana_task("mpi_tasks/data.csv",'Price')
+        if len(sys.argv)>2:
+            
+            file1 = sys.argv[2]
+            file2 = sys.argv[3]
+            if file1 == None or file2 == None:
+                statics_ana_task("mpi_tasks/data.csv",'Price')
+            else:
+                statics_ana_task(file1,file2)
         else:
-            statics_ana_task(file1,file2)
+            statics_ana_task("mpi_tasks/data.csv",'Price')
 
     elif task == "matrix_multiply":
         if len(sys.argv)>2:

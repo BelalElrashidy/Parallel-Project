@@ -51,11 +51,20 @@ def upload_two_files():
     
     data = request.form.get('extra')
 
-    if data:
-        args.append(data)
+    
     task = request.form.get('task')
     np = request.form.get('np', '4')
+    if data:
+        if task == "sort":
+            
+            data = str(data).split(' ')
+            print(data)
+            Data = [float(s) for s in data]
+            # Data = np.array(Data)
+            args.append(Data)
 
+        else:
+            args.append(data)
     if not task:
         return jsonify({"error": "Task not specified"}), 400
 
