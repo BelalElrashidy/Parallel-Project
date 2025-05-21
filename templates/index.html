@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MPI Parallel Tasks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gray-100 min-h-screen flex flex-col items-center p-6 font-sans"
+  >
+    <h1 class="text-3xl font-semibold text-gray-800 mb-6">
+      Run MPI Parallel Tasks
+    </h1>
+
+    <div class="flex flex-wrap justify-center gap-4 max-w-4xl mb-6">
+      <button
+        onclick="runTask('matrix_multiply')"
+        class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md shadow-md min-w-[160px] transition"
+      >
+        Matrix Multiply
+      </button>
+      <button
+        onclick="runTask('parallel_search')"
+        class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md shadow-md min-w-[160px] transition"
+      >
+        Parallel Search
+      </button>
+      <button
+        onclick="runTask('linear_regression')"
+        class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md shadow-md min-w-[160px] transition"
+      >
+        Linear Regression
+      </button>
+      <button
+        onclick="runTask('file_process')"
+        class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md shadow-md min-w-[160px] transition"
+      >
+        File Processing
+      </button>
+      <button
+        onclick="runTask('image_process')"
+        class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md shadow-md min-w-[160px] transition"
+      >
+        Image Processing
+      </button>
+      <button
+        onclick="runTask('sort')"
+        class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md shadow-md min-w-[160px] transition"
+      >
+        Odd Even Sort
+      </button>
+      <button
+        onclick="runTask('statics-ana')"
+        class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md shadow-md min-w-[160px] transition"
+      >
+        Statistics Analysis
+      </button>
+    </div>
+
+    <div class="mb-6 max-w-4xl w-full flex items-center gap-4">
+      <label for="numProcs" class="text-gray-700 font-medium"
+        >Number of Processors:</label
+      >
+      <input
+        type="number"
+        id="numProcs"
+        min="1"
+        max="32"
+        value="4"
+        class="border border-gray-300 rounded-md px-3 py-2 w-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <label class="block mb-2 font-medium" for="csvFile"
+        >Upload CSV file:</label
+      >
+      <input
+        type="file"
+        id="csvFile"
+        name="csvFile"
+        accept=".csv"
+        class="border rounded p-2 mb-4"
+      />
+      <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded">
+        Upload & Run Task
+      </button>
+    </form>
+
+    <pre
+      id="output"
+      class="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl h-72 overflow-y-auto font-mono text-gray-700 whitespace-pre-wrap"
+    >
+Output will appear here...
+  </pre
+    >
+    >
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fileInput = document.getElementById("csvFile");
+          if (!fileInput.files.length) {
+            alert("Please select a CSV file.");
+            return;
+          }
+          const formData = new FormData();
+          formData.append("csvFile", fileInput.files[0]);
+          formData.append("task", "your_task_name"); // e.g. 'matrix_multiply'
+
+          const output = document.getElementById("output");
+          output.textContent = "Uploading and running task...";
+
+          try {
+            const response = await fetch("/upload_and_run", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+            if (data.error) {
+              output.textContent = "Error:\n" + data.error;
+            } else {
+              output.textContent = "Output:\n" + data.output;
+            }
+          } catch (err) {
+            output.textContent = "Fetch error: " + err;
+          }
+        });
+    </script>
+
+    <script>
+      function runTask(task) {
+        const output = document.getElementById("output");
+        const numProcs = document.getElementById("numProcs").value || "4";
+
+        output.textContent = `Running task: ${task} with ${numProcs} processors... Please wait.`;
+
+        const params = new URLSearchParams();
+        params.append("task", task);
+        params.append("np", numProcs);
+
+        fetch("/run_task", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params.toString(),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              output.textContent = "Error:\n" + data.error;
+            } else {
+              output.textContent = "Output:\n" + data.output;
+            }
+          })
+          .catch((err) => {
+            output.textContent = "Fetch error: " + err;
+          });
+      }
+    </script>
+  </body>
+</html>

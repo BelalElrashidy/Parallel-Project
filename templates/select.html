@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MPI Task Runner - File Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gray-100 min-h-screen flex flex-col items-center p-6 font-sans"
+  >
+    <h1 class="text-3xl font-semibold text-gray-800 mb-8">
+      Run MPI Parallel Tasks
+    </h1>
+
+    <form
+      id="uploadForm"
+      class="bg-white p-6 rounded-lg shadow-md max-w-lg w-full space-y-6"
+    >
+      <div>
+        <label for="task" class="block mb-2 font-medium text-gray-700"
+          >Select Task:</label
+        >
+        <select
+          id="task"
+          name="task"
+          class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        >
+          <option value="matrix_multiply">Matrix Multiply</option>
+          <option value="parallel_search">Parallel Search</option>
+          <option value="linear_regression">Linear Regression</option>
+          <option value="file_process">File Processing</option>
+          <option value="image_process">Image Processing</option>
+          <option value="sort">Odd Even Sort</option>
+          <option value="statics-ana">Statistics Analysis</option>
+          <option value="dist_mat_mult">
+            Distributed Matrix Multiplication
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label for="np" class="block mb-2 font-medium text-gray-700"
+          >Number of Processors:</label
+        >
+        <input
+          type="number"
+          id="np"
+          name="np"
+          value="4"
+          min="1"
+          max="32"
+          class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+      </div>
+
+      <div>
+        <label for="file1" class="block mb-2 font-medium text-gray-700"
+          >Upload First File (CSV or Image):</label
+        >
+        <input
+          type="file"
+          id="file1"
+          name="file1"
+          accept=".csv,image/*,.txt"
+          class="w-full"
+        />
+      </div>
+
+      <div>
+        <label for="file2" class="block mb-2 font-medium text-gray-700"
+          >Upload Second File (CSV or Image):</label
+        >
+        <input
+          type="file"
+          id="file2"
+          name="file2"
+          accept=".csv,image/*"
+          class="w-full"
+        />
+      </div>
+      <div>
+        <label for="extra" class="block mb-2 font-medium text-gray-700"
+          >Number of Processors:</label
+        >
+        <input
+          type="text"
+          id="extra"
+          name="extra"
+          class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md shadow-md transition"
+      >
+        Run Task
+      </button>
+    </form>
+
+    <pre
+      id="output"
+      class="mt-8 bg-white shadow-lg rounded-lg p-6 w-full max-w-lg h-64 overflow-y-auto font-mono text-gray-700 whitespace-pre-wrap"
+    >
+Output will appear here...
+  </pre
+    >
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const output = document.getElementById("output");
+          output.textContent = "Uploading files and running task...";
+
+          const formData = new FormData(e.target);
+          console.log(formData);
+          try {
+            const response = await fetch("/upload_two_files", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+            if (data.error) output.textContent = "Error:\n" + data.error;
+            else output.textContent = "Output:\n" + data.output;
+          } catch (err) {
+            output.textContent = "Fetch error: " + err;
+          }
+        });
+    </script>
+  </body>
+</html>
